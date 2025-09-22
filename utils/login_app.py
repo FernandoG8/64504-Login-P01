@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
-import secureHash
-import hashlib
-import saveJson
+from utils import secureHash
+from utils import saveJson
+from utils import secureAES
+
 
 class LoginApp:
     def __init__(self, root):

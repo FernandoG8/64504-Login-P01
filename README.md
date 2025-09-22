@@ -2,6 +2,7 @@
 
 Esta practica es una aplicación de escritorio en **Python** que implementa un sistema básico de **inicio de sesión y registro de usuarios** usando **Tkinter** para la interfaz gráfica y un archivo **JSON** como base de datos simple.  
 ## Pruebas de Usuario
+- Deberá ejecutar python main.py
 - Puede usar el siguiente Username: UsuarioPrueba
 - Su contraseña es: Admin123
 
@@ -30,6 +31,8 @@ Esta practica es una aplicación de escritorio en **Python** que implementa un s
 - `secureHash.py` → Función para generar el hash de la contraseña con SHA-256.  
 - `app.py` (principal) → Contiene la clase `LoginApp` con la interfaz Tkinter y la lógica de login/registro.  
 - `users_db.json` → Archivo donde se almacenan los usuarios registrados.  
+
+- `main.py` → Archivo que llamaremos **para ejecutar la app**.  
 
 ##  Seguridad  
 - Las contraseñas **no se guardan en texto plano**, se guardan como un hash SHA-256.  
