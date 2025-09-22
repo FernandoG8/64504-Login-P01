@@ -1,24 +1,22 @@
 import tkinter as tk
 from tkinter import messagebox
+import secureHash
 import hashlib
+import saveJson
 
 class LoginApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Sistema de Login")
-        self.root.geometry("400x300")
+        self.root.geometry("500x400")
         self.root.configure(bg='#f0f0f0')
         
         # Base de datos simulada (usuario: contraseña_hasheada)
-        self.users = {
-            'admin': 'pass-hash'
-        }
+        # Cargamos la base de datos
+        self.db_file = "users_db.json"
+        self.users = self.load_users()
         
         self.create_widgets()
-    
-    def hash_password(self, password):
-        """Hashea la contraseña usando SHA-256"""
-        return 'pass-hash'
     
     def create_widgets(self):
         # Frame principal
@@ -121,23 +119,55 @@ class LoginApp:
         # Información de usuarios demo
         info_frame = tk.Frame(main_frame, bg='#f0f0f0')
         info_frame.pack(pady=20)
-        
-
-        
+    
     def signin(self):
-        return print("usuario registrado")
+        if saveJson.isExist(self.user_entry.get().strip(), self.db_file):
+            return messagebox.showerror("Error", "El usuario ya existe")
+        else:
+            self.save_users()
+        return None
+    
+    def hash_password(self, password):
+        return secureHash.encodeHash(password)
+    
+    def load_users(self):
+        try:
+            return saveJson.cargar_usuarios(self.db_file)
+        except Exception:
+            return {}
+    
+    def save_users(self):
+        username = self.user_entry.get().strip()
+        password_raw = self.pass_entry.get().strip()
+
+        # Validación contraseña
+        if len(password_raw) < 8:
+            messagebox.showerror("Error", "La contraseña debe tener al menos 8 caracteres.")
+            return
+        if not any(char.isdigit() for char in password_raw):
+            messagebox.showerror("Error", "La contraseña debe contener al menos un número.")
+            return
+
+        password = secureHash.encodeHash(password_raw)
+        try:
+            messagebox.showinfo("Éxito", f"¡Se ha registrado correctamente  {username}!")
+            saveJson.guardar_usuario(username, password, self.db_file)
+        except Exception:
+            pass
     
     def login(self):
         """Verifica las credenciales del usuario"""
         username = self.user_entry.get().strip()
         password = self.pass_entry.get().strip()
-        
+
         if not username or not password:
             messagebox.showerror("Error", "Por favor, complete todos los campos")
             return
-        
+
+        # Recargar usuarios por si hubo cambios
+        self.users = self.load_users()
+
         # Verificar usuario y contraseña
-        # userJson = getUsersDB
         if username in self.users:
             hashed_password = self.hash_password(password)
             if self.users[username] == hashed_password:
@@ -147,7 +177,7 @@ class LoginApp:
                 messagebox.showerror("Error", "Contraseña incorrecta")
         else:
             messagebox.showerror("Error", "Usuario no encontrado")
-    
+   
     def clear_fields(self):
         """Limpia los campos de entrada"""
         self.user_entry.delete(0, tk.END)
@@ -162,7 +192,7 @@ class LoginApp:
         # Crear nueva ventana
         dashboard = tk.Tk()
         dashboard.title("Dashboard Principal")
-        dashboard.geometry("600x400")
+        dashboard.geometry("600x600")
         dashboard.configure(bg='#ffffff')
         
         # Bienvenida
@@ -199,7 +229,7 @@ def main():
     screen_height = root.winfo_screenheight()
     x = (screen_width - window_width) // 2
     y = (screen_height - window_height) // 2
-    
+    root.geometry(f'{window_width}x{window_height}+{x}+{y}')
     
     # Iniciar aplicación
     app = LoginApp(root)
